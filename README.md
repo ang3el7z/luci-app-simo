@@ -39,8 +39,8 @@ wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-sin
 
 ### 2. Select mode:
 - `Singbox-ui`
-- `Singbox (tproxy/tun mode)`
-- `Singbox (tproxy/tun mode) + singbox-ui`
+- `Singbox (tproxy(not stable)/tun mode)`
+- `Singbox (tprox(not stable)y/tun mode) + singbox-ui`
 
 ### 3. Choose operation:
 - Install
