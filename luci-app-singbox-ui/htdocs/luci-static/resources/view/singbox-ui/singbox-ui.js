@@ -171,6 +171,16 @@ async function isTproxyUciPresent() {
 	} catch { return false; }
 }
 
+async function setTproxyIncludeEnabled(enabled) {
+	try {
+		if (!(await isTproxyUciPresent())) return;
+		await fs.exec('/sbin/uci', ['set', `firewall.singbox_tproxy.enabled=${enabled ? '1' : '0'}`]);
+		await fs.exec('/sbin/uci', ['commit', 'firewall']);
+	} catch (e) {
+		console.warn('[tproxy] set include enabled failed:', e);
+	}
+}
+
 async function isTunUciPresent() {
 	try {
 		const r = await fs.exec('/sbin/uci', ['get', 'network.proxy.device']);
@@ -179,11 +189,13 @@ async function isTunUciPresent() {
 }
 
 async function disableTproxy() {
+	await setTproxyIncludeEnabled(false);
 	try   { await runNft(['delete', 'table', 'ip', 'singbox']); }
 	catch (e) { console.warn('[tproxy] delete table failed:', e); }
 }
 
 async function enableTproxy() {
+	await setTproxyIncludeEnabled(true);
 	try   { await runNft(['-f', TPROXY_RULE_FILE]); }
 	catch (e) { console.warn('[tproxy] apply rules failed:', e); }
 }
@@ -332,10 +344,9 @@ const MODE_SWITCH_BIN = '/usr/bin/singbox-ui/singbox-ui-mode-switch';
 async function execModeSwitch(action) {
 	const r = await fs.exec(MODE_SWITCH_BIN, [action]);
 	const lines = String(r?.stdout ?? '').trim().split('\n');
-	const lastLine = lines[lines.length - 1].trim();
-	if (lastLine !== 'ok') {
+	const lastLine = lines[lines.length - 1]?.trim();
+	if (lastLine !== 'ok')
 		throw new Error(String(r?.stderr ?? r?.stdout ?? 'mode switch failed').trim() || 'mode switch failed');
-	}
 }
 
 /**
@@ -1302,7 +1313,7 @@ function initPage(page, state, mainContent, mainUrl) {
 								await saveFile('/etc/sing-box/' + currentConfig.name,     '{}');
 								await saveFile('/etc/sing-box/url_' + currentConfig.name, '');
 								if (currentConfig.name === 'config.json') {
-									if (await isTproxyTablePresent()) await disableTproxy();
+									if (state.tproxyActive || await isTproxyTablePresent()) await disableTproxy();
 									await execService('sing-box', 'stop');
 									await execServiceLifecycle('singbox-ui-autoupdater-service', 'stop');
 									await execServiceLifecycle('singbox-ui-health-autoupdater-service', 'stop');
