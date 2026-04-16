@@ -3,6 +3,7 @@
 # Actions: enable-tun | disable-tun | enable-tproxy | disable-tproxy
 
 set -e
+ACTION="${1:-unknown}"
 
 NFT_RULE_FILE="/etc/nftables.d/singbox.nft"
 TUN_IFACE="singtun0"
@@ -20,9 +21,14 @@ CROSS='✗'
 
 step()  { echo -e "${INDENT}${ARROW} ${FG_ACCENT}$1${RESET}"; }
 done_() { echo -e "${INDENT}${CHECK} ${FG_SUCCESS}$1${RESET}"; }
-die()   { echo -e "${INDENT}${CROSS} ${FG_ERROR}$1${RESET}" >&2; exit 1; }
 
-trap 'die "Mode switch failed (action: ${1:-unknown})"' ERR
+on_exit() {
+    rc="$?"
+    [ "$rc" -eq 0 ] && return 0
+    echo -e "${INDENT}${CROSS} ${FG_ERROR}Mode switch failed (action: ${ACTION})${RESET}" >&2
+}
+
+trap on_exit EXIT
 
 # ── network.proxy UCI ────────────────────────────────────────────────────────
 
@@ -125,6 +131,8 @@ ensure_tproxy_firewall_include() {
     uci set firewall.singbox_tproxy=include
     uci set firewall.singbox_tproxy.type="nftables"
     uci set firewall.singbox_tproxy.path="$NFT_RULE_FILE"
+    uci set firewall.singbox_tproxy.position="ruleset-prepend"
+    uci -q delete firewall.singbox_tproxy.chain
     uci set firewall.singbox_tproxy.enabled="1"
     uci commit firewall
 }
