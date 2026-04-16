@@ -136,7 +136,7 @@ ensure_tproxy_firewall_include() {
     uci set firewall.singbox_tproxy.type="nftables"
     uci set firewall.singbox_tproxy.path="$NFT_RULE_FILE"
     uci set firewall.singbox_tproxy.position="ruleset-prepend"
-    uci -q delete firewall.singbox_tproxy.chain
+    uci -q delete firewall.singbox_tproxy.chain || true
     uci set firewall.singbox_tproxy.enabled="1"
     uci commit firewall
 }
