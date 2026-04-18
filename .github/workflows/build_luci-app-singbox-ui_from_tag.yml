@@ -4,106 +4,144 @@ run-name: Build release TAG ${{ github.ref_name }}
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  # Один джоб обновляет версию в Makefile и пушит в ветку — избегаем гонки при параллельной сборке ipk/apk
   sync-version:
-    name: Sync Makefile version to branch
+    name: Sync Version To Branch
     runs-on: ubuntu-latest
+    outputs:
+      tag_version: ${{ steps.tag.outputs.tag_version }}
+      target_branch: ${{ steps.branch.outputs.target_branch }}
+      sync_sha: ${{ steps.sync.outputs.sync_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
-      - name: Detect target branch from tag
-        id: detect_branch
+      - name: Parse Tag Version
+        id: tag
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
+          TAG_NAME="${GITHUB_REF_NAME}"
+          TAG_VERSION="${TAG_NAME#v}"
+
+          if [ "$TAG_VERSION" = "$TAG_NAME" ]; then
+            echo "Tag must start with 'v' (example: v1.2.3)." >&2
+            exit 1
+          fi
+
+          if ! [[ "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid tag version: $TAG_VERSION" >&2
+            exit 1
+          fi
+
+          echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Detect Target Branch From Tag Commit
+        id: branch
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
           git fetch origin "+refs/heads/*:refs/remotes/origin/*"
-          BRANCH=""
-          for b in $(git branch -r --contains "$GITHUB_SHA" | grep -v "origin/HEAD" | sed "s#origin/##"); do
-            [ -z "$b" ] && continue
-            if [ "$b" != "${DEFAULT_BRANCH}" ]; then
-              BRANCH="$b"
+
+          mapfile -t BRANCHES < <(git branch -r --contains "$GITHUB_SHA" | sed 's/^[*[:space:]]*//' | grep -v 'origin/HEAD' | sed 's#^origin/##' || true)
+
+          TARGET_BRANCH=""
+          for b in "${BRANCHES[@]}"; do
+            if [ "$b" != "$DEFAULT_BRANCH" ]; then
+              TARGET_BRANCH="$b"
               break
             fi
           done
-          if [ -z "$BRANCH" ]; then
-            BRANCH=$(git branch -r --contains "$GITHUB_SHA" | grep -v "origin/HEAD" | head -n 1 | sed "s#origin/##")
-          fi
-          if [ -z "$BRANCH" ]; then
-            BRANCH="${DEFAULT_BRANCH}"
-          fi
-          echo "TARGET_BRANCH=$BRANCH" >> "$GITHUB_ENV"
-          echo "📌 Will push Makefile version sync to branch: $BRANCH"
-        env:
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
-      - name: Update Makefile version to tag and push to branch
-        run: |
-          set -e
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          LUCI_APP_SINGBOX_UI_VERSION=$(grep '^PKG_VERSION:=' luci-app-singbox-ui/Makefile | cut -d '=' -f2 | tr -d ' ')
-          echo "📦 Makefile version: $LUCI_APP_SINGBOX_UI_VERSION"
-          echo "🏷  Git tag version: $TAG_VERSION"
-          if [ "$LUCI_APP_SINGBOX_UI_VERSION" != "$TAG_VERSION" ]; then
-            echo "🔁 Updating Makefile version to match tag..."
-            sed -i "s/^PKG_VERSION:=.*$/PKG_VERSION:=${TAG_VERSION}/" luci-app-singbox-ui/Makefile
+          if [ -z "$TARGET_BRANCH" ] && [ "${#BRANCHES[@]}" -gt 0 ]; then
+            TARGET_BRANCH="${BRANCHES[0]}"
           fi
-          if git diff --quiet; then
-            echo "ℹ No changes to commit."
+
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH="$DEFAULT_BRANCH"
+          fi
+
+          echo "target_branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Will sync version in branch: $TARGET_BRANCH"
+
+      - name: Sync Version In Makefile And Push
+        id: sync
+        shell: bash
+        env:
+          TAG_VERSION: ${{ steps.tag.outputs.tag_version }}
+          TARGET_BRANCH: ${{ steps.branch.outputs.target_branch }}
+        run: |
+          set -euo pipefail
+
+          if git show-ref --verify --quiet "refs/remotes/origin/${TARGET_BRANCH}"; then
+            git switch -C "${TARGET_BRANCH}" "origin/${TARGET_BRANCH}"
           else
+            git switch --detach
+          fi
+
+          sed -i "s/^PKG_VERSION:=.*$/PKG_VERSION:=${TAG_VERSION}/" luci-app-singbox-ui/Makefile
+
+          if git diff --quiet; then
+            echo "No version changes detected."
+          else
+            git add luci-app-singbox-ui/Makefile
+            git -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" \
+              commit -m "github-actions[bot]: sync Makefile version to v${TAG_VERSION}"
+
             if git show-ref --verify --quiet "refs/remotes/origin/${TARGET_BRANCH}"; then
-              echo "📤 Committing updated Makefile to ${TARGET_BRANCH}..."
-              git add luci-app-singbox-ui/Makefile
-              git -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" \
-                commit -m "github-actions[bot]: sync Makefile version with tag v${TAG_VERSION}"
-              git push origin HEAD:${TARGET_BRANCH}
+              git push origin "HEAD:${TARGET_BRANCH}"
             else
-              echo "⚠️ Target branch '${TARGET_BRANCH}' not found. Skipping push."
+              echo "Target branch '${TARGET_BRANCH}' not found. Skipping push."
             fi
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          echo "sync_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build (${{ matrix.pkg_type }})
     runs-on: ubuntu-latest
+    needs: sync-version
     strategy:
       fail-fast: false
       matrix:
         pkg_type: [ipk, apk]
 
     steps:
-      - name: Checkout
+      - name: Checkout Synced Commit
         uses: actions/checkout@v5.0.0
         with:
+          ref: ${{ needs.sync-version.outputs.sync_sha }}
           fetch-depth: 0
 
-      # Только локально подставляем версию из тега в Makefile для сборки, без пуша
-      - name: Set Makefile version to tag (for build only)
+      - name: Ensure Version Equals Tag
+        shell: bash
         run: |
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          sed -i "s/^PKG_VERSION:=.*$/PKG_VERSION:=${TAG_VERSION}/" luci-app-singbox-ui/Makefile
-          echo "📦 Building with PKG_VERSION=$TAG_VERSION"
+          set -euo pipefail
+          sed -i "s/^PKG_VERSION:=.*$/PKG_VERSION:=${{ needs.sync-version.outputs.tag_version }}/" luci-app-singbox-ui/Makefile
 
-      - name: Build Docker image (${{ matrix.pkg_type }})
+      - name: Build Docker Image (${{ matrix.pkg_type }})
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
           file: Dockerfile-${{ matrix.pkg_type }}
           tags: singbox-ui-${{ matrix.pkg_type }}:ci
 
-      - name: Create Docker container
+      - name: Create Docker Container
         run: docker create --name singbox-ui-${{ matrix.pkg_type }} singbox-ui-${{ matrix.pkg_type }}:ci
 
-      - name: Copy package from Docker container
+      - name: Copy Package From Docker Container
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p ./pkg-out
           docker cp singbox-ui-${{ matrix.pkg_type }}:/builder/bin/packages/x86_64/luci/. ./bin-${{ matrix.pkg_type }}/
           if [ "${{ matrix.pkg_type }}" = "ipk" ]; then
@@ -112,36 +150,53 @@ jobs:
             cp ./bin-${{ matrix.pkg_type }}/luci-app-singbox-ui*.apk ./pkg-out/luci-app-singbox-ui.apk
           fi
 
-      - name: Remove Docker container
-        run: docker rm singbox-ui-${{ matrix.pkg_type }}
+      - name: Remove Docker Container
+        if: always()
+        run: docker rm -f singbox-ui-${{ matrix.pkg_type }} || true
 
-      - name: Upload built package
+      - name: Upload Built Package
         uses: actions/upload-artifact@v4.6.2
         with:
           name: pkg-${{ matrix.pkg_type }}
           path: pkg-out/
 
   release:
-    name: Create GitHub Release
+    name: Publish GitHub Release
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - sync-version
+      - build
 
     steps:
-      - name: Download ipk artifact
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: pkg-ipk
-          path: release-ipk/
+          path: artifacts
 
-      - name: Download apk artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: pkg-apk
-          path: release-apk/
+      - name: Collect Release Files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release_files
+          find artifacts -type f \( -name "*.ipk" -o -name "*.apk" \) -exec cp {} release_files/ \;
+          ls -lah release_files
+
+      - name: Generate Release Notes
+        shell: bash
+        run: |
+          cat > release_notes.md <<'EOF'
+          ## singbox-ui ${{ github.ref_name }}
+
+          - Tag version: `${{ needs.sync-version.outputs.tag_version }}`
+          - Source branch: `${{ needs.sync-version.outputs.target_branch }}`
+          - Source commit: `${{ needs.sync-version.outputs.sync_sha }}`
+          EOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.4.0
         with:
-          files: |
-            release-ipk/*.ipk
-            release-apk/*.apk
+          tag_name: ${{ github.ref_name }}
+          body_path: release_notes.md
+          files: release_files/*
+          draft: false
+          prerelease: false
