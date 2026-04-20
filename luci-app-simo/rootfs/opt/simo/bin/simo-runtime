@@ -1,0 +1,257 @@
+#!/bin/sh
+set -eu
+
+SIMO_DIR="/opt/simo"
+BIN_DIR="${SIMO_DIR}/bin"
+SETTINGS_FILE="${SIMO_DIR}/settings"
+KERNEL_MANAGER="${BIN_DIR}/simo-kernel-manager"
+CORE_BIN="${BIN_DIR}/core"
+SINGBOX_ADAPTER_BIN="${BIN_DIR}/simo-singbox-adapter"
+
+MIHOMO_CONFIG="${SIMO_DIR}/config.yaml"
+SINGBOX_CONFIG="${SIMO_DIR}/config-singbox.json"
+
+normalize_kernel() {
+	case "${1:-}" in
+		mihomo|clash|metacubex)
+			echo "mihomo"
+			;;
+		sing-box|singbox)
+			echo "sing-box"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+read_selected_kernel() {
+	[ -f "${SETTINGS_FILE}" ] || return 0
+	grep -m1 '^CORE_TYPE=' "${SETTINGS_FILE}" 2>/dev/null | cut -d= -f2-
+}
+
+detect_active_kernel() {
+	if [ -x "${KERNEL_MANAGER}" ]; then
+		kernel="$("${KERNEL_MANAGER}" get-active 2>/dev/null || true)"
+		if [ -n "${kernel}" ] && normalize_kernel "${kernel}" >/dev/null 2>&1; then
+			normalize_kernel "${kernel}"
+			return 0
+		fi
+	fi
+
+	if [ -x "${CORE_BIN}" ] && "${CORE_BIN}" -v 2>/dev/null | grep -qi 'mihomo'; then
+		echo "mihomo"
+		return 0
+	fi
+
+	kernel="$(read_selected_kernel || true)"
+	if [ -n "${kernel}" ] && normalize_kernel "${kernel}" >/dev/null 2>&1; then
+		normalize_kernel "${kernel}"
+		return 0
+	fi
+
+	echo "mihomo"
+}
+
+get_config_path() {
+	case "$1" in
+		mihomo)
+			echo "${MIHOMO_CONFIG}"
+			;;
+		sing-box)
+			echo "${SINGBOX_CONFIG}"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+get_kernel_binary() {
+	case "$1" in
+		mihomo)
+			if [ -x "${BIN_DIR}/mihomo" ]; then
+				echo "${BIN_DIR}/mihomo"
+				return 0
+			fi
+			;;
+		sing-box)
+			if [ -x "${BIN_DIR}/sing-box" ]; then
+				echo "${BIN_DIR}/sing-box"
+				return 0
+			fi
+			;;
+	esac
+
+	if [ -x "${CORE_BIN}" ]; then
+		echo "${CORE_BIN}"
+		return 0
+	fi
+
+	return 1
+}
+
+prepare_runtime_config() {
+	kernel="$1"
+	case "${kernel}" in
+		sing-box)
+			[ -x "${SINGBOX_ADAPTER_BIN}" ] || {
+				echo "sing-box adapter binary not found: ${SINGBOX_ADAPTER_BIN}" >&2
+				return 1
+			}
+			"${SINGBOX_ADAPTER_BIN}" generate
+			;;
+		*)
+			return 0
+			;;
+	esac
+}
+
+validate_mihomo_config() {
+	config_path="$1"
+	kernel_bin="$2"
+	[ -x "${kernel_bin}" ] || {
+		echo "Mihomo binary not found: ${kernel_bin}" >&2
+		return 1
+	}
+	[ -f "${config_path}" ] || {
+		echo "Mihomo config not found: ${config_path}" >&2
+		return 1
+	}
+
+	if "${kernel_bin}" -d "${SIMO_DIR}" -f "${config_path}" -t; then
+		return 0
+	fi
+
+	if [ "${config_path}" = "${MIHOMO_CONFIG}" ]; then
+		"${kernel_bin}" -d "${SIMO_DIR}" -t
+		return $?
+	fi
+
+	return 1
+}
+
+validate_singbox_config() {
+	config_path="$1"
+	kernel_bin="$2"
+	[ -x "${kernel_bin}" ] || {
+		echo "sing-box binary not found: ${kernel_bin}" >&2
+		return 1
+	}
+	[ -f "${config_path}" ] || {
+		echo "sing-box config not found: ${config_path}" >&2
+		return 1
+	}
+
+	"${kernel_bin}" check -c "${config_path}" -D "${SIMO_DIR}"
+}
+
+validate_config_for_core() {
+	kernel="$1"
+	config_path="$2"
+	kernel_bin="$(get_kernel_binary "${kernel}")" || {
+		echo "Binary for kernel '${kernel}' is not installed" >&2
+		return 1
+	}
+
+	case "${kernel}" in
+		mihomo)
+			validate_mihomo_config "${config_path}" "${kernel_bin}"
+			;;
+		sing-box)
+			validate_singbox_config "${config_path}" "${kernel_bin}"
+			;;
+		*)
+			echo "Unsupported kernel: ${kernel}" >&2
+			return 1
+			;;
+	esac
+}
+
+run_kernel() {
+	kernel="$1"
+	config_path="$2"
+	kernel_bin="$(get_kernel_binary "${kernel}")" || {
+		echo "Binary for kernel '${kernel}' is not installed" >&2
+		return 1
+	}
+
+	case "${kernel}" in
+		mihomo)
+			exec "${kernel_bin}" -d "${SIMO_DIR}"
+			;;
+		sing-box)
+			[ -f "${config_path}" ] || {
+				echo "sing-box config not found: ${config_path}" >&2
+				return 1
+			}
+			exec "${kernel_bin}" run -c "${config_path}" -D "${SIMO_DIR}"
+			;;
+		*)
+			echo "Unsupported kernel: ${kernel}" >&2
+			return 1
+			;;
+	esac
+}
+
+usage() {
+	echo "Usage: $0 {get-active|get-config-path [kernel]|prepare [kernel]|validate [kernel]|validate-path <path> [kernel]|run [kernel]}" >&2
+	exit 1
+}
+
+cmd="${1:-}"
+
+case "${cmd}" in
+	get-active)
+		detect_active_kernel
+		;;
+	get-config-path)
+		if [ $# -ge 2 ]; then
+			kernel="$(normalize_kernel "$2")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		get_config_path "${kernel}"
+		;;
+	prepare)
+		if [ $# -ge 2 ]; then
+			kernel="$(normalize_kernel "$2")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		prepare_runtime_config "${kernel}"
+		;;
+	validate)
+		if [ $# -ge 2 ]; then
+			kernel="$(normalize_kernel "$2")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		prepare_runtime_config "${kernel}"
+		config_path="$(get_config_path "${kernel}")"
+		validate_config_for_core "${kernel}" "${config_path}"
+		;;
+	validate-path)
+		[ $# -ge 2 ] || usage
+		config_path="$2"
+		if [ $# -ge 3 ]; then
+			kernel="$(normalize_kernel "$3")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		validate_config_for_core "${kernel}" "${config_path}"
+		;;
+	run)
+		if [ $# -ge 2 ]; then
+			kernel="$(normalize_kernel "$2")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		prepare_runtime_config "${kernel}"
+		config_path="$(get_config_path "${kernel}")"
+		run_kernel "${kernel}" "${config_path}"
+		;;
+	*)
+		usage
+		;;
+esac

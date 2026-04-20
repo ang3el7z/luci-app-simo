@@ -1,129 +1,146 @@
 #!/bin/sh
-BRANCH="${BRANCH:-main}"
+set -eu
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
-UI_PATH="$SCRIPT_DIR/lib/ui.sh"
-UI_DOWNLOADED=0
-cleanup_ui_library() {
-    if [ "${UI_DOWNLOADED:-0}" -eq 1 ]; then
-        local cleanup_msg="${MSG_CLEANUP_LIB:-Cleaning library...}"
-        if command -v show_progress >/dev/null 2>&1; then
-            show_progress "$cleanup_msg"
-        else
-            echo "$cleanup_msg"
-        fi
-        rm -f -- "$UI_PATH"
-        rmdir -- "$SCRIPT_DIR/lib" 2>/dev/null || true
-    fi
-}
-ensure_ui_library() {
-    if [ -f "$UI_PATH" ]; then
-        . "$UI_PATH"
-        return 0
-    fi
+SIMO_REPO="${SIMO_REPO:-ang3el7z/luci-app-simo}"
+SIMO_PACKAGE="luci-app-simo"
+RELEASE_API="https://api.github.com/repos/${SIMO_REPO}/releases/latest"
+PKG_EXT=""
+PKG_FILE=""
 
-    mkdir -p "$SCRIPT_DIR/lib" 2>/dev/null
-    ui_url="https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/$BRANCH/other/scripts/lib/ui.sh"
-    if command -v wget >/dev/null 2>&1; then
-        wget -O "$UI_PATH" "$ui_url" || return 1
-    elif command -v curl >/dev/null 2>&1; then
-        curl -fsSL -o "$UI_PATH" "$ui_url" || return 1
-    else
-        echo "Missing UI library and downloader (wget/curl)" >&2
-        return 1
-    fi
-
-    UI_DOWNLOADED=1
-    . "$UI_PATH"
+log() {
+	printf '%s\n' "$*"
 }
 
-ensure_ui_library || {
-    echo "Missing UI library: $UI_PATH" >&2
-    exit 1
-}
-trap cleanup_ui_library EXIT HUP INT TERM
-
-# Инициализация языка / Language initialization
-init_language() {
-    local script_name="install.sh"
-
-    if [ -z "$LANG" ]; then
-        while true; do
-            show_message "Выберите язык / Select language [1/2]:"
-            show_message "1. Русский (Russian)"
-            show_message "2. English (Английский)"
-            read_input " Ваш выбор / Your choice [1/2]: " LANG
-            case "$LANG" in
-                1|2)
-                    break
-                    ;;
-                *)
-                    show_error "Неверный выбор / Invalid choice"
-                    ;;
-            esac
-        done
-    fi
-
-    case ${LANG:-2} in
-    1)
-        MSG_INSTALL_TITLE="Запуск! ($script_name)"
-        MSG_COMPLETE="Выполнено! ($script_name)"
-        MSG_FINISHED="Все инструкции выполнены!"
-        MSG_INSTALL="Переход к установочному скрипту..."
-        MSG_CLEANUP_LIB="Очистка библиотек..."
-        MSG_CLEANUP="Очистка файлов..."
-        MSG_CLEANUP_DONE="Файлы удалены!"
-        MSG_WAITING="Ожидание %d сек"
-        ;;
-    *)
-        MSG_INSTALL_TITLE="Starting! ($script_name)"
-        MSG_COMPLETE="Done! ($script_name)"
-        MSG_FINISHED="All instructions completed!"
-        MSG_INSTALL="Transition to the installation script..."
-        MSG_CLEANUP_LIB="Cleaning library..."
-        MSG_CLEANUP="Cleaning files..."
-        MSG_CLEANUP_DONE="Files deleted!"
-        MSG_WAITING="Waiting %d seconds"
-        ;;
-esac
+die() {
+	printf 'Error: %s\n' "$*" >&2
+	exit 1
 }
 
-# Ожидание / Waiting
-waiting() {
-    local interval="${1:-30}"
-    show_progress "$(printf "$MSG_WAITING" "$interval")"
-    sleep "$interval"
-}
-
-# Установка / Install
-install() {
-    show_warning "$MSG_INSTALL"
-    wget -O /root/install-singbox+singbox-ui.sh https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/$BRANCH/other/scripts/install-singbox+singbox-ui.sh &&
-    chmod 0755 /root/install-singbox+singbox-ui.sh &&
-    LANG="$LANG" BRANCH="$BRANCH" sh /root/install-singbox+singbox-ui.sh
-}
-
-# Очистка файлов / Cleanup
 cleanup() {
-    show_progress "$MSG_CLEANUP"
-    rm -- "$0"
-    show_success "$MSG_CLEANUP_DONE"
+	[ -n "${PKG_FILE}" ] && rm -f "${PKG_FILE}" || true
 }
 
-# Завершение скрипта / Complete script
-complete_script() {
-    show_success "$MSG_COMPLETE"
-    cleanup
+fetch_text() {
+	local url="$1"
+	if command -v curl >/dev/null 2>&1; then
+		curl -fsSL "$url"
+	elif command -v wget >/dev/null 2>&1; then
+		wget -qO- "$url"
+	else
+		die "Missing downloader (curl or wget)"
+	fi
 }
 
-# ======== Основной код / Main code ========
+download_file() {
+	local url="$1"
+	local out="$2"
+	if command -v curl >/dev/null 2>&1; then
+		curl -fsSL -o "$out" "$url"
+	elif command -v wget >/dev/null 2>&1; then
+		wget -O "$out" "$url"
+	else
+		die "Missing downloader (curl or wget)"
+	fi
+}
 
-run_steps_with_separator \
-    "::${BRANCH}" \
-    init_language
+detect_pkg_manager() {
+	if command -v apk >/dev/null 2>&1; then
+		PKG_EXT="apk"
+		PKG_FILE="/tmp/${SIMO_PACKAGE}.apk"
+		return 0
+	fi
 
-run_steps_with_separator \
-    "::$MSG_INSTALL_TITLE" \
-    install \
-    complete_script \
-    "::$MSG_FINISHED"
+	if command -v opkg >/dev/null 2>&1; then
+		PKG_EXT="ipk"
+		PKG_FILE="/tmp/${SIMO_PACKAGE}.ipk"
+		return 0
+	fi
+
+	die "No supported package manager found (apk/opkg)"
+}
+
+extract_asset_url() {
+	local json="$1"
+	printf '%s\n' "$json" \
+		| sed -n 's/.*"browser_download_url":[[:space:]]*"\([^"]*\)".*/\1/p' \
+		| grep -E "${SIMO_PACKAGE}.*\.${PKG_EXT}$" \
+		| head -n1
+}
+
+is_installed() {
+	if [ "$PKG_EXT" = "apk" ]; then
+		apk info -e "$SIMO_PACKAGE" >/dev/null 2>&1
+	else
+		opkg list-installed "$SIMO_PACKAGE" >/dev/null 2>&1
+	fi
+}
+
+install_deps() {
+	log "Refreshing package indexes..."
+	if [ "$PKG_EXT" = "apk" ]; then
+		apk update
+		apk add curl kmod-tun >/dev/null 2>&1 || apk add curl kmod-tun
+		apk add kmod-nft-tproxy >/dev/null 2>&1 || true
+	else
+		opkg update
+		opkg install curl kmod-tun >/dev/null 2>&1 || opkg install curl kmod-tun
+		opkg install kmod-nft-tproxy >/dev/null 2>&1 || opkg install iptables-mod-tproxy >/dev/null 2>&1 || true
+	fi
+}
+
+install_package() {
+	log "Fetching latest release metadata from ${SIMO_REPO}..."
+	release_json=$(fetch_text "$RELEASE_API") || die "Unable to read latest release metadata"
+	asset_url=$(extract_asset_url "$release_json" || true)
+	[ -n "$asset_url" ] || die "No ${PKG_EXT} asset found for ${SIMO_PACKAGE} in the latest release"
+
+	log "Downloading package: $asset_url"
+	download_file "$asset_url" "$PKG_FILE" || die "Unable to download ${PKG_EXT} package"
+
+	log "Installing package..."
+	if [ "$PKG_EXT" = "apk" ]; then
+		apk add --allow-untrusted "$PKG_FILE" || die "Package installation failed"
+	else
+		opkg install "$PKG_FILE" || die "Package installation failed"
+	fi
+}
+
+remove_package() {
+	if ! is_installed; then
+		log "${SIMO_PACKAGE} is not installed"
+		return 0
+	fi
+
+	log "Removing ${SIMO_PACKAGE}..."
+	if [ "$PKG_EXT" = "apk" ]; then
+		apk del "$SIMO_PACKAGE" || die "Package removal failed"
+	else
+		opkg remove "$SIMO_PACKAGE" || die "Package removal failed"
+	fi
+}
+
+trap cleanup EXIT HUP INT TERM
+
+ACTION="${1:-install}"
+detect_pkg_manager
+
+case "$ACTION" in
+	install|update)
+		install_deps
+		install_package
+		log "${SIMO_PACKAGE} installed successfully."
+		;;
+	reinstall)
+		install_deps
+		remove_package
+		install_package
+		log "${SIMO_PACKAGE} reinstalled successfully."
+		;;
+	remove|uninstall)
+		remove_package
+		log "${SIMO_PACKAGE} removed successfully."
+		;;
+	*)
+		die "Usage: $0 [install|update|reinstall|remove]"
+		;;
+esac

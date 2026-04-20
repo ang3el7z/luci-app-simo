@@ -1,0 +1,197 @@
+#!/bin/sh
+set -eu
+
+SIMO_DIR="/opt/simo"
+SETTINGS_FILE="${SIMO_DIR}/settings"
+MIHOMO_CONFIG_FILE="${SIMO_DIR}/config.yaml"
+SINGBOX_CONFIG_FILE="${SIMO_DIR}/config-singbox.json"
+SINGBOX_BIN="${SIMO_DIR}/bin/sing-box"
+
+read_setting() {
+	local key="$1"
+	[ -f "${SETTINGS_FILE}" ] || return 0
+	grep -m1 "^${key}=" "${SETTINGS_FILE}" 2>/dev/null | cut -d= -f2-
+}
+
+normalize_proxy_mode() {
+	case "${1:-}" in
+		tproxy|tun|mixed) echo "$1" ;;
+		*) echo "tproxy" ;;
+	esac
+}
+
+normalize_tun_stack() {
+	case "${1:-}" in
+		system|gvisor|mixed) echo "$1" ;;
+		*) echo "system" ;;
+	esac
+}
+
+read_mihomo_config_value() {
+	local key="$1"
+	[ -f "${MIHOMO_CONFIG_FILE}" ] || return 0
+	awk -v key="${key}" '
+		$0 ~ "^[[:space:]]*" key ":[[:space:]]*" {
+			sub(/^[[:space:]]*/, "", $0)
+			sub(/^[^:]*:[[:space:]]*/, "", $0)
+			sub(/[[:space:]]*#.*/, "", $0)
+			gsub(/^["'\'']|["'\'']$/, "", $0)
+			print $0
+			exit
+		}
+	' "${MIHOMO_CONFIG_FILE}"
+}
+
+json_escape() {
+	printf '%s' "${1:-}" \
+		| sed \
+			-e 's/\\/\\\\/g' \
+			-e 's/"/\\"/g'
+}
+
+build_inbounds_json() {
+	local proxy_mode="$1"
+	local tun_stack="$2"
+
+	case "${proxy_mode}" in
+		tproxy)
+			cat <<'EOF'
+[
+  {
+    "type": "tproxy",
+    "tag": "tproxy-in",
+    "listen": "0.0.0.0",
+    "listen_port": 7894
+  }
+]
+EOF
+			;;
+		tun)
+			cat <<EOF
+[
+  {
+    "type": "tun",
+    "tag": "tun-in",
+    "interface_name": "simo-tun",
+    "stack": "${tun_stack}",
+    "auto_route": false,
+    "strict_route": false
+  }
+]
+EOF
+			;;
+		mixed)
+			cat <<EOF
+[
+  {
+    "type": "tproxy",
+    "tag": "tproxy-in",
+    "listen": "0.0.0.0",
+    "listen_port": 7894
+  },
+  {
+    "type": "tun",
+    "tag": "tun-in",
+    "interface_name": "simo-tun",
+    "stack": "${tun_stack}",
+    "auto_route": false,
+    "strict_route": false
+  }
+]
+EOF
+			;;
+	esac
+}
+
+generate_config() {
+	local proxy_mode tun_stack log_level external_controller secret inbounds_json
+
+	proxy_mode="$(normalize_proxy_mode "$(read_setting PROXY_MODE)")"
+	tun_stack="$(normalize_tun_stack "$(read_setting TUN_STACK)")"
+
+	log_level="$(read_mihomo_config_value log-level)"
+	[ -n "${log_level}" ] || log_level="error"
+
+	external_controller="$(read_mihomo_config_value external-controller)"
+	[ -n "${external_controller}" ] || external_controller="0.0.0.0:9090"
+
+	secret="$(read_mihomo_config_value secret)"
+
+	inbounds_json="$(build_inbounds_json "${proxy_mode}" "${tun_stack}")"
+
+	mkdir -p "${SIMO_DIR}"
+	cat > "${SINGBOX_CONFIG_FILE}" <<EOF
+{
+  "log": {
+    "level": "$(json_escape "${log_level}")"
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "udp",
+        "tag": "dns-remote",
+        "server": "1.1.1.1",
+        "server_port": 53
+      }
+    ]
+  },
+  "inbounds": ${inbounds_json},
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "direct"
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "$(json_escape "${external_controller}")",
+      "external_ui": "${SIMO_DIR}/ui",
+      "secret": "$(json_escape "${secret}")"
+    }
+  }
+}
+EOF
+}
+
+validate_config() {
+	[ -x "${SINGBOX_BIN}" ] || {
+		echo "sing-box binary not found at ${SINGBOX_BIN}" >&2
+		return 1
+	}
+	[ -f "${SINGBOX_CONFIG_FILE}" ] || {
+		echo "sing-box config not found at ${SINGBOX_CONFIG_FILE}" >&2
+		return 1
+	}
+
+	"${SINGBOX_BIN}" check -c "${SINGBOX_CONFIG_FILE}" -D "${SIMO_DIR}"
+}
+
+usage() {
+	echo "Usage: $0 {generate|validate|generate-and-validate}" >&2
+	exit 1
+}
+
+cmd="${1:-}"
+case "${cmd}" in
+	generate)
+		generate_config
+		;;
+	validate)
+		validate_config
+		;;
+	generate-and-validate)
+		generate_config
+		validate_config
+		;;
+	*)
+		usage
+		;;
+esac

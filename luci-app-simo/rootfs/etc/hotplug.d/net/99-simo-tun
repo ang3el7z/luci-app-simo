@@ -1,0 +1,20 @@
+#!/bin/sh
+# Part of the Simo package - installed to /etc/hotplug.d/net/99-simo-tun
+#
+# Reacts to mihomo creating the simo-tun device (ACTION=add) and immediately
+# installs the ip route pointing to it. This is faster than waiting for the
+# 30 s poll in service_started() and covers the normal startup path.
+
+[ -x /opt/simo/bin/simo-rules ] || exit 0
+
+if [ -x /opt/simo/bin/simo-kernel-manager ]; then
+	[ "$(/opt/simo/bin/simo-kernel-manager get-active 2>/dev/null)" = "mihomo" ] || exit 0
+fi
+
+case "$ACTION" in
+    add)
+        [ "$INTERFACE" = "simo-tun" ] || exit 0
+        /opt/simo/bin/simo-rules tun_route_setup
+        /opt/simo/bin/simo-rules repair_policy
+        ;;
+esac

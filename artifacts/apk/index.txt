@@ -1,1 +1,1 @@
-luci-app-singbox-ui-pr-73-fix-tproxy-mode-switch-behavior-and-fw4-include-placement-20260414-0946.apk
+﻿

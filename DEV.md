@@ -1,6 +1,9 @@
-# 👨‍💻 Dev Shortcuts
+# Dev Shortcuts
 
-### One-click installer:
+`luci-app-simo` is the only package target in this repository.
+
+## Single-file installer
+
 ```bash
-wget -O install-one-click.sh https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/other/scripts/install-one-click.sh && chmod +x install-one-click.sh && ./install-one-click.sh
+wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-simo/main/install.sh && chmod 0755 /root/install.sh && sh /root/install.sh
 ```

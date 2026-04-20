@@ -1,91 +1,37 @@
-# 🌐 luci-app-singbox-ui
+# luci-app-simo
 
 [Read in English](./README.md)
 
-Веб-интерфейс для Sing-Box под **OpenWrt 23/24 и 25**
+`luci-app-simo` — LuCI-приложение для OpenWrt с единой панелью управления `simo` и переключаемыми runtime-ядрами.
 
-**luci-app-singbox-ui** — это простой персональный веб-интерфейс для управления сервисом **Sing-Box** на OpenWRT.
+## Основные возможности
 
-> ⚠️ **Предупреждение**  
-> Этот материал предоставлен **исключительно в образовательных и исследовательских целях**.  
-> Автор **не несёт ответственности** за распространение, неправильное использование, поломку устройств или иные последствия.  
-> Вы используете всё содержимое **на свой страх и риск**.  
-> Коммерческое или вредоносное использование **не поощряется**.
+- единый UI и единый сервис: `simo`
+- бинарники ядер в `/opt/simo/bin/`
+- бесшовное переключение ядра через `/opt/simo/bin/simo-kernel-manager`
+- общая модель работы режимов `tun` / `tproxy` / `mixed`
+- package-first lifecycle для `.ipk` и `.apk`
 
----
+## Установка
 
-## 📸 Screenshots
-
-<img width="972" height="858" alt="chrome_T3g08LVqwe" src="https://github.com/user-attachments/assets/026aca3e-ba20-479a-b8bd-3e42344f9eff" />
-
----
-
-## ✨ Возможности
-
-- ✅ Старт / Стоп / Перезапуск сервиса Sing-Box
-- 🔧 Добавление подписок через URL или вручную (JSON)
-- 💾 Хранение и редактирование нескольких конфигураций в браузере
-- ♻️ Автоматическое обновление сервиса
-- 🔍 Проверка состояния сервиса и бинарника
-- 🧠 Перезапуск при нехватке памяти
-
----
-
-## ⚙️ Установка
-
-### 1. Запустите установочный скрипт:
 ```bash
-wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/install.sh && chmod 0755 /root/install.sh && BRANCH="main" sh /root/install.sh
+wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-simo/main/install.sh && chmod 0755 /root/install.sh && sh /root/install.sh
 ```
 
-### 2. Выберите режим:
-- `Singbox-ui`
-- `Singbox (tproxy(нестабильный)/tun mode)`
-- `Singbox (tproxy(нестабильный)/tun mode) + singbox-ui`
+Действия установщика:
 
-### 3. Выберите операцию:
-- Установка
-- Удаление
-- Переустановка / Обновление
+- `sh /root/install.sh install`
+- `sh /root/install.sh update`
+- `sh /root/install.sh reinstall`
+- `sh /root/install.sh remove`
 
----
+## Сборка
 
-## 🧩 Подсказки для пользователей
-
-### 🔑 Очистка SSH-ключа:
-```bash 
-ssh-keygen -R 192.168.1.1 
-```
-
-### 🛜 Подключение к роутеру:
 ```bash
-ssh root@192.168.1.1
+docker build -f Dockerfile-ipk -t simo-ipk .
+docker build -f Dockerfile-apk -t simo-apk .
 ```
 
-### 🔄 Обновление OpenWrt-интерфейса (если плагин не виден, нужно сбросить кэш):
-`Ctrl + Shift + I`
+## Лицензия
 
-Или нажмите F12, чтобы открыть DevTools, затем кликните правой кнопкой на кнопку «Обновить» и выберите «Жёсткая перезагрузка».
-
-### 🗂️ Шаблоны конфигураций
-
-- [`openwrt-template`](https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/other/file/openwrt-template.json)
-- [`openwrt-template-tproxy`](https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/other/file/openwrt-template-tproxy.json)
-> Изучайте официальную документацию и статьи по ссылке: [`Sing-Box Configuration`](https://sing-box.sagernet.org/configuration/)
-
-### 🛠️ Исправления
-
-- [`Исправление низкой скорости в tun-режиме`](https://github.com/ang3el7z/luci-app-singbox-ui/issues/1)
-- `установите tun в конфиге -> singtun0`
-
----
-
-## 🙏 Благодарности
-
-Вы также можете создать Pull Request или Issue. И не забудьте нажать на значок звезды ⭐, чтобы поддержать проект.
-
----
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/ang3el7z/luci-app-singbox-ui.svg?variant=adaptive)](https://starchart.cc/ang3el7z/luci-app-singbox-ui)
+MIT. См. [LICENSE](./LICENSE).

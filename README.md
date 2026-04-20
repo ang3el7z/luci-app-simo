@@ -1,96 +1,37 @@
-# 🌐 luci-app-singbox-ui
+# luci-app-simo
 
-[Читать на русском](./README.ru.md)
+[Read in Russian](./README.ru.md)
 
-Web interface for Sing-Box on **OpenWrt 23/24 and 25**
+`luci-app-simo` is a LuCI app for OpenWrt with one unified control surface (`simo`) and switchable runtime kernels.
 
-**luci-app-singbox-ui** is a simple personal web interface to manage the **Sing-Box** service on OpenWRT.
+## Highlights
 
-> ⚠️ **Disclaimer**  
-> This project is intended **strictly for educational and research purposes**.  
-> The author **takes no responsibility** for misuse, damage to devices, or any consequences of use.  
-> You use everything at **your own risk**. Commercial or malicious use is **not encouraged**.
+- one UI and one service: `simo`
+- runtime binaries under `/opt/simo/bin/`
+- seamless kernel switching through `/opt/simo/bin/simo-kernel-manager`
+- shared operating model for `tun` / `tproxy` / `mixed`
+- package-first lifecycle for both `.ipk` and `.apk`
 
----
+## Install
 
-## 📸 Screenshots
-
-<img width="972" height="858" alt="chrome_T3g08LVqwe" src="https://github.com/user-attachments/assets/198efa7a-6861-4f5f-9685-c717f3bb82a1" />
-
----
-
-## ✨ Features
-
-- ✅ Start / Stop / Restart the Sing-Box service
-- 🔧 Add subscriptions via URL or manually paste JSON
-- 💾 Store and edit multiple configs in your browser
-- ♻️ Auto-update Sing-Box service
-- 🔍 Auto-check service & binary status
-- 🧠 Auto-restart when memory is low
-
----
-
-## ⚙️ Installation
-
-### 1. Run installation script:
 ```bash
-wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/install.sh && chmod 0755 /root/install.sh && BRANCH="main" sh /root/install.sh
+wget -O /root/install.sh https://raw.githubusercontent.com/ang3el7z/luci-app-simo/main/install.sh && chmod 0755 /root/install.sh && sh /root/install.sh
 ```
 
-### 2. Select mode:
-- `Singbox-ui`
-- `Singbox (tproxy(not stable)/tun mode)`
-- `Singbox (tprox(not stable)y/tun mode) + singbox-ui`
+Installer actions:
 
-### 3. Choose operation:
-- Install
-- Uninstall
-- Reinstall / Update
+- `sh /root/install.sh install`
+- `sh /root/install.sh update`
+- `sh /root/install.sh reinstall`
+- `sh /root/install.sh remove`
 
----
+## Build
 
-## 🧩 User Tips
-
-### 🔑 Clear SSH key:
 ```bash
-ssh-keygen -R 192.168.1.1
+docker build -f Dockerfile-ipk -t simo-ipk .
+docker build -f Dockerfile-apk -t simo-apk .
 ```
-
-### 🛜 Connect to router:
-```bash
-ssh root@192.168.1.1
-```
-
-### 🔄 Refresh OpenWrt UI (if plugin not visible, need clear cache):
-`Ctrl + Shift + I` (DevTools → refresh)
-
-Press F12 to open DevTools, then right-click the “Reload” button and select “Hard Reload”.
-
-### 🗂️ Config Templates
-
-- [`openwrt-template`](https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/other/file/openwrt-template.json)
-- [`openwrt-template-tproxy`](https://raw.githubusercontent.com/ang3el7z/luci-app-singbox-ui/main/other/file/openwrt-template-tproxy.json)
-> Please refer to the official documentation and articles here: [`Sing-Box Configuration`](https://sing-box.sagernet.org/configuration/)
-
-### 🛠️ Fixes
-
-- [`Fix low speed in tun mode`](https://github.com/ang3el7z/luci-app-singbox-ui/issues/1)
-- `set tun in config -> singtun0`
-
----
-
-## 🙏 Credits
-
-You can also create a Pull Request or Issue. And don’t forget to click the star ⭐ icon to support the project.
-
----
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) file for details
-
----
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/ang3el7z/luci-app-singbox-ui.svg?variant=adaptive)](https://starchart.cc/ang3el7z/luci-app-singbox-ui)
+MIT. See [LICENSE](./LICENSE).

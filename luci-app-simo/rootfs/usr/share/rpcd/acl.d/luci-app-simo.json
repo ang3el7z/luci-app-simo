@@ -1,0 +1,80 @@
+{
+    "luci-app-simo": {
+        "description": "Grant access to Simo procedures",
+        "read": {
+            "file": {
+                "/etc/openwrt_release": [ "read" ],
+                "/usr/lib/opkg/status": [ "read" ],
+                "/usr/lib/apk/db/installed": [ "read" ],
+                "/lib/apk/db/installed": [ "read" ],
+                "/opt/simo/config.yaml": [ "read" ],
+                "/opt/simo/config-singbox.json": [ "read" ],
+                "/opt/simo/config2.yaml": [ "read" ],
+                "/opt/simo/config3.yaml": [ "read" ],
+                "/opt/simo/settings": [ "read" ],
+                "/opt/simo/bin/core": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/mihomo": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/sing-box": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/simo-kernel-manager": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/simo-runtime": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/simo-singbox-adapter": [ "read", "stat", "exec" ],
+                "/opt/simo/bin/simo-rules": [ "read", "stat", "exec" ],
+                "/opt/simo/lst/": [ "list" ],
+                "/opt/simo/lst/*.txt": [ "read" ],
+                "/tmp/simo-*": [ "read", "stat" ],
+                "/proc/net/dev": [ "read" ],
+                "/proc/net/route": [ "read" ],
+                "/sys/class/net": [ "list" ],
+                "/sys/class/net/*": [ "list", "read" ],
+                "/sys/class/net/*/address": [ "read" ],
+                "/tmp/sysinfo/model": [ "read" ],
+                "/sbin/logread": [ "exec" ],
+                "/bin/opkg": [ "exec" ],
+                "/usr/bin/opkg": [ "exec" ],
+                "/bin/apk": [ "exec" ],
+                "/usr/bin/apk": [ "exec" ],
+                "/bin/ls": [ "exec" ],
+                "/sbin/ip": [ "exec" ],
+                "/usr/sbin/brctl": [ "exec" ],
+                "/bin/sh": [ "exec" ],
+                "/bin/cat": [ "exec" ],
+                "/usr/bin/tr": [ "exec" ],
+                "/usr/bin/md5sum": [ "exec" ],
+                "/usr/bin/cut": [ "exec" ]
+            },
+            "ubus": {
+                "file": [ "read", "stat", "exec" ],
+                "service": [ "list" ]
+            }
+        },
+        "write": {
+            "file": {
+                "/opt/simo/config.yaml": [ "write" ],
+                "/opt/simo/config-singbox.json": [ "write" ],
+                "/opt/simo/config2.yaml": [ "write" ],
+                "/opt/simo/config3.yaml": [ "write" ],
+                "/opt/simo/settings": [ "write" ],
+                "/opt/simo/bin/core": [ "write" ],
+                "/opt/simo/bin/mihomo": [ "write" ],
+                "/opt/simo/bin/sing-box": [ "write" ],
+                "/opt/simo/lst/*.txt": [ "write", "remove" ],
+                "/opt/simo/bin/simo-kernel-manager": [ "exec" ],
+                "/opt/simo/bin/simo-runtime": [ "exec" ],
+                "/opt/simo/bin/simo-singbox-adapter": [ "exec" ],
+                "/opt/simo/bin/simo-rules": [ "exec" ],
+                "/tmp/mihomo-*": [ "write", "remove" ],
+                "/tmp/simo-*": [ "write", "remove" ],
+                "/etc/init.d/simo": [ "exec" ],
+                "/usr/bin/curl": [ "exec" ],
+                "/bin/gzip": [ "exec" ],
+                "/bin/mv": [ "exec" ],
+                "/bin/chmod": [ "exec" ],
+                "/usr/bin/chmod": [ "exec" ],
+                "/bin/mkdir": [ "exec" ]
+            },
+            "ubus": {
+                "file": [ "write", "exec" ]
+            }
+        }
+    }
+}

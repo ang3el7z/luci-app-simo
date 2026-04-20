@@ -1,0 +1,204 @@
+#!/bin/sh
+set -eu
+
+SIMO_DIR="/opt/simo"
+SETTINGS_FILE="${SIMO_DIR}/settings"
+BIN_DIR="${SIMO_DIR}/bin"
+ACTIVE_LINK="${BIN_DIR}/core"
+
+normalize_kernel() {
+	case "${1:-}" in
+		mihomo|clash|metacubex)
+			echo "mihomo"
+			;;
+		sing-box|singbox)
+			echo "sing-box"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+kernel_binary_path() {
+	case "$1" in
+		mihomo)
+			echo "${BIN_DIR}/mihomo"
+			;;
+		sing-box)
+			echo "${BIN_DIR}/sing-box"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+clear_active_link() {
+	if [ -L "${ACTIVE_LINK}" ] || [ -e "${ACTIVE_LINK}" ]; then
+		rm -f "${ACTIVE_LINK}"
+	fi
+}
+
+read_selected_kernel() {
+	[ -f "${SETTINGS_FILE}" ] || return 0
+	grep -m1 '^CORE_TYPE=' "${SETTINGS_FILE}" 2>/dev/null | cut -d= -f2-
+}
+
+write_selected_kernel() {
+	local kernel="$1"
+	local tmp="${SETTINGS_FILE}.tmp.$$"
+
+	mkdir -p "${SIMO_DIR}"
+	if [ -f "${SETTINGS_FILE}" ]; then
+		grep -v '^CORE_TYPE=' "${SETTINGS_FILE}" > "${tmp}" || true
+	else
+		: > "${tmp}"
+	fi
+
+	printf 'CORE_TYPE=%s\n' "${kernel}" >> "${tmp}"
+	mv "${tmp}" "${SETTINGS_FILE}"
+}
+
+detect_linked_kernel() {
+	[ -L "${ACTIVE_LINK}" ] || return 1
+	case "$(readlink "${ACTIVE_LINK}" 2>/dev/null || true)" in
+		*/mihomo)
+			echo "mihomo"
+			return 0
+			;;
+		*/sing-box)
+			echo "sing-box"
+			return 0
+			;;
+	esac
+	return 1
+}
+
+detect_active_kernel() {
+	local linked
+	linked="$(detect_linked_kernel || true)"
+	if [ -n "${linked}" ]; then
+		echo "${linked}"
+		return 0
+	fi
+
+	local selected
+	selected="$(read_selected_kernel || true)"
+	if [ -n "${selected}" ]; then
+		normalize_kernel "${selected}"
+		return 0
+	fi
+
+	echo "mihomo"
+}
+
+list_installed_kernels() {
+	local mihomo_path="${BIN_DIR}/mihomo"
+	local singbox_path="${BIN_DIR}/sing-box"
+
+	[ -x "${mihomo_path}" ] && echo "mihomo"
+	[ -x "${singbox_path}" ] && echo "sing-box"
+}
+
+is_installed() {
+	local kernel="$1"
+	local target
+	target="$(kernel_binary_path "${kernel}")"
+	[ -x "${target}" ]
+}
+
+sync_active_link() {
+	local kernel="$1"
+	local target
+	target="$(kernel_binary_path "${kernel}")"
+
+	if [ ! -x "${target}" ]; then
+		echo "Kernel binary is missing: ${target}" >&2
+		return 1
+	fi
+
+	mkdir -p "${BIN_DIR}"
+	ln -snf "${target}" "${ACTIVE_LINK}"
+}
+
+set_active_kernel() {
+	local kernel="$1"
+	write_selected_kernel "${kernel}"
+
+	if ! sync_active_link "${kernel}"; then
+		clear_active_link
+		echo "Selected kernel saved, but binary is not installed yet: ${kernel}" >&2
+	fi
+}
+
+print_status() {
+	local selected
+	local active
+	selected="$(read_selected_kernel || true)"
+	active="$(detect_active_kernel)"
+
+	printf 'selected=%s\n' "${selected}"
+	printf 'active=%s\n' "${active}"
+	if is_installed "mihomo"; then
+		echo "mihomo_installed=1"
+	else
+		echo "mihomo_installed=0"
+	fi
+	if is_installed "sing-box"; then
+		echo "singbox_installed=1"
+	else
+		echo "singbox_installed=0"
+	fi
+}
+
+usage() {
+	echo "Usage: $0 {get-active|set-active <mihomo|sing-box>|sync [kernel]|list|is-installed <kernel>|status|kernel-path <kernel>}" >&2
+	exit 1
+}
+
+cmd="${1:-}"
+
+case "${cmd}" in
+	get-active)
+		detect_active_kernel
+		;;
+	set-active)
+		[ $# -eq 2 ] || usage
+		set_active_kernel "$(normalize_kernel "$2")"
+		;;
+	sync)
+		if [ $# -ge 2 ]; then
+			kernel="$(normalize_kernel "$2")"
+		else
+			kernel="$(detect_active_kernel)"
+		fi
+		write_selected_kernel "${kernel}"
+		if ! sync_active_link "${kernel}"; then
+			clear_active_link
+			echo "Selected kernel saved, but binary is not installed yet: ${kernel}" >&2
+		fi
+		;;
+	list)
+		list_installed_kernels
+		;;
+	is-installed)
+		[ $# -eq 2 ] || usage
+		if is_installed "$(normalize_kernel "$2")"; then
+			echo "yes"
+		else
+			echo "no"
+			exit 1
+		fi
+		;;
+	status)
+		print_status
+		;;
+	kernel-path)
+		[ $# -eq 2 ] || usage
+		kernel_binary_path "$(normalize_kernel "$2")"
+		;;
+	*)
+		usage
+		;;
+esac
