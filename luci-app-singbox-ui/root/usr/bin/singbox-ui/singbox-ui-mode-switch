@@ -87,6 +87,9 @@ remove_firewall_tun() {
 install_nft_rule() {
     mkdir -p /etc/sing-box
     cat > "$NFT_RULE_FILE" << 'EOF'
+table ip singbox {}
+delete table ip singbox
+
 define PROXY_FWMARK = 1
 define BYPASS_MARK = 2
 define RESERVED_IP = {
