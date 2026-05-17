@@ -1,0 +1,588 @@
+# Chinese Simplified translation for Simo
+# Copyright (C) 2024-2026 Simo contributors
+# This file is distributed under the same license as the package.
+#
+msgid ""
+msgstr ""
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Additional"
+msgstr "附加"
+
+msgid "Architecture: %s"
+msgstr "架构：%s"
+
+msgid "Are you sure you want to delete \"%s\"?"
+msgstr "确定要删除 \"%s\" 吗？"
+
+msgid "A ruleset with this name already exists."
+msgstr "该名称的规则集已存在。"
+
+msgid "auto"
+msgstr "自动"
+
+msgid "Auto Detection"
+msgstr "自动检测"
+
+msgid "Auto detect LAN bridge"
+msgstr "自动检测 LAN 网桥"
+
+msgid "Auto detect WAN interface"
+msgstr "自动检测 WAN 接口"
+
+msgid "Auto LAN: %s"
+msgstr "自动 LAN：%s"
+
+msgid "Auto WAN: %s"
+msgstr "自动 WAN：%s"
+
+msgid "Block QUIC (UDP/443)"
+msgstr "屏蔽 QUIC (UDP/443)"
+
+msgid "Both original URL and /mihomo returned links/base64 instead of Mihomo YAML. Check provider export type."
+msgstr "原始 URL 和 /mihomo 均返回了链接/base64 而非 Mihomo YAML，请检查订阅导出类型。"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Cannot save proxy mode."
+msgstr "无法保存代理模式。"
+
+msgid "Choose interfaces that should bypass proxy."
+msgstr "选择需要绕过代理的接口。"
+
+msgid "Choose interfaces that should go through proxy."
+msgstr "选择需要通过代理的接口。"
+
+msgid "Clear"
+msgstr "清空"
+
+msgid "Clear editor?"
+msgstr "清空编辑器内容？"
+
+msgid "Clear Editor"
+msgstr "清空编辑器"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Command failed"
+msgstr "命令执行失败"
+
+msgid "Config"
+msgstr "配置"
+
+msgid "Configuration applied and service reloaded."
+msgstr "配置已应用，服务已重载。"
+
+msgid "Connection interrupted while finalizing Simo update. Reloading interface..."
+msgstr "完成 Simo 更新时连接中断，正在重新加载界面..."
+
+msgid "Control"
+msgstr "控制"
+
+msgid "Core"
+msgstr "内核"
+
+msgid "Core compatibility notes:"
+msgstr "内核兼容性说明："
+
+msgid "Core switched to %s. Install its kernel binary to use it."
+msgstr "内核已切换到 %s，请安装对应的内核二进制文件以使用。"
+
+msgid "Create"
+msgstr "创建"
+
+msgid "Dashboard"
+msgstr "面板"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Delete Ruleset"
+msgstr "删除规则集"
+
+msgid "Detected LAN: %s"
+msgstr "检测到 LAN：%s"
+
+msgid "Detected WAN: %s"
+msgstr "检测到 WAN：%s"
+
+msgid "Device OS"
+msgstr "设备系统"
+
+msgid "Downloaded file is empty."
+msgstr "下载的文件为空。"
+
+msgid "Download failed"
+msgstr "下载失败"
+
+msgid "Downloading..."
+msgstr "下载中..."
+
+msgid "Downloading mihomo kernel..."
+msgstr "正在下载 mihomo 内核..."
+
+msgid "Downloading Simo package..."
+msgstr "正在下载 Simo 安装包..."
+
+msgid "Downloading sing-box kernel..."
+msgstr "正在下载 sing-box 内核..."
+
+msgid "Download Kernel"
+msgstr "下载内核"
+
+msgid "Download Update"
+msgstr "下载更新"
+
+msgid "Ethernet"
+msgstr "以太网"
+
+msgid "Example usage in config.yaml"
+msgstr "config.yaml 使用示例"
+
+msgid "Exclude mode: proxy all interfaces except selected ones"
+msgstr "排除模式：代理除所选接口以外的所有接口"
+
+msgid "Explicit mode: proxy only selected interfaces"
+msgstr "指定模式：仅代理所选接口"
+
+msgid "Extraction failed"
+msgstr "解压失败"
+
+msgid "Failed to apply configuration: %s"
+msgstr "应用配置失败：%s"
+
+msgid "Failed to apply subscription: %s"
+msgstr "应用订阅失败：%s"
+
+msgid "Failed to create ruleset."
+msgstr "创建规则集失败。"
+
+msgid "Failed to initialize editor: %s"
+msgstr "初始化编辑器失败：%s"
+
+msgid "Failed to install Simo dependencies."
+msgstr "安装 Simo 依赖失败。"
+
+msgid "Failed to install Simo package."
+msgstr "安装 Simo 安装包失败。"
+
+msgid "Failed to install sing-box binary"
+msgstr "安装 sing-box 二进制文件失败"
+
+msgid "Failed to load config profile: %s"
+msgstr "加载配置文件失败：%s"
+
+msgid "Failed to load kernel information: %s"
+msgstr "加载内核信息失败：%s"
+
+msgid "Failed to load Simo release information: %s"
+msgstr "加载 Simo 发布信息失败：%s"
+
+msgid "Failed to mark sing-box executable"
+msgstr "设置 sing-box 可执行权限失败"
+
+msgid "Failed to open dashboard: %s"
+msgstr "打开面板失败：%s"
+
+msgid "Failed to open rulesets: %s"
+msgstr "打开规则集失败：%s"
+
+msgid "Failed to prepare extraction directory"
+msgstr "准备解压目录失败"
+
+msgid "Failed to prepare runtime config."
+msgstr "准备运行时配置失败。"
+
+msgid "Failed to refresh logs: %s"
+msgstr "刷新日志失败：%s"
+
+msgid "Failed to restart Simo service: %s"
+msgstr "重启 Simo 服务失败：%s"
+
+msgid "Failed to save IP-CIDR list: %s"
+msgstr "保存 IP-CIDR 列表失败：%s"
+
+msgid "Failed to save ruleset: %s"
+msgstr "保存规则集失败：%s"
+
+msgid "Failed to save settings: %s"
+msgstr "保存设置失败：%s"
+
+msgid "Failed to save theme preference: %s"
+msgstr "保存主题偏好失败：%s"
+
+msgid "Failed to set active kernel"
+msgstr "设置活动内核失败"
+
+msgid "Failed to set main config: %s"
+msgstr "设置主配置失败：%s"
+
+msgid "Failed to switch kernel: %s"
+msgstr "切换内核失败：%s"
+
+msgid "Failed to switch proxy mode: %s"
+msgstr "切换代理模式失败：%s"
+
+msgid "Failed to update package index."
+msgstr "更新软件包索引失败。"
+
+msgid "Failed to update Simo: %s"
+msgstr "更新 Simo 失败：%s"
+
+msgid "Failed to validate runtime config."
+msgstr "验证运行时配置失败。"
+
+msgid "First Run: Install Kernel"
+msgstr "首次运行：安装内核"
+
+msgid "Inject HWID headers into proxy-providers"
+msgstr "向代理提供者注入 HWID 请求头"
+
+msgid "Installed"
+msgstr "已安装"
+
+msgid "Installed version: %s"
+msgstr "已安装版本：%s"
+
+msgid "Installing..."
+msgstr "安装中..."
+
+msgid "Install Kernel"
+msgstr "安装内核"
+
+msgid "Install mihomo"
+msgstr "安装 mihomo"
+
+msgid "Install Simo"
+msgstr "安装 Simo"
+
+msgid "Install sing-box"
+msgstr "安装 sing-box"
+
+msgid "Install %s kernel"
+msgstr "安装 %s 内核"
+
+msgid "Interfaces"
+msgstr "接口"
+
+msgid "Invalid name. Use letters, numbers, \"_\" or \"-\"."
+msgstr "名称无效，请使用字母、数字、"_" 或 "-"。"
+
+msgid "Invalid subscription URL."
+msgstr "无效的订阅 URL。"
+
+msgid "IP-CIDR List (fake-ip whitelist mode)"
+msgstr "IP-CIDR 列表（fake-ip 白名单模式）"
+
+msgid "IP-CIDR list saved and firewall rules updated."
+msgstr "IP-CIDR 列表已保存，防火墙规则已更新。"
+
+msgid "IP-CIDR list saved, but firewall update failed: %s"
+msgstr "IP-CIDR 列表已保存，但防火墙更新失败：%s"
+
+msgid "Kernel download failed: %s"
+msgstr "内核下载失败：%s"
+
+msgid "Kernel installed and service restarted."
+msgstr "内核已安装，服务已重启。"
+
+msgid "Kernel installed, but failed to restart service: %s"
+msgstr "内核已安装，但重启服务失败：%s"
+
+msgid "Kernel installed successfully."
+msgstr "内核安装成功。"
+
+msgid "Kernel Settings"
+msgstr "内核设置"
+
+msgid "Kernel switched to %s, config validated, and service is healthy."
+msgstr "内核已切换到 %s，配置已验证，服务运行正常。"
+
+msgid "Kernel switched to %s. Runtime config prepared and validated."
+msgstr "内核已切换到 %s，运行时配置已准备并验证。"
+
+msgid "Kernel switch to %s failed, and rollback to %s also failed: %s"
+msgstr "切换到 %s 失败，回滚到 %s 也失败：%s"
+
+msgid "Kernel switch to %s failed: %s. Rolled back to %s."
+msgstr "切换到 %s 失败：%s，已回滚到 %s。"
+
+msgid "Latest release: %s"
+msgstr "最新版本：%s"
+
+msgid "Local Rulesets"
+msgstr "本地规则集"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "Manage local .txt lists for rule-providers."
+msgstr "管理用于 rule-providers 的本地 .txt 列表。"
+
+msgid "Manual interfaces: %s"
+msgstr "手动接口：%s"
+
+msgid "`mihomo`: best compatibility with existing YAML profile providers and rule flows."
+msgstr "`mihomo`：与现有 YAML 配置文件提供者和规则流兼容性最佳。"
+
+msgid "Mihomo kernel downloaded and installed."
+msgstr "mihomo 内核已下载并安装。"
+
+msgid "Mode"
+msgstr "模式"
+
+msgid "Mode: Exclude (proxy all except selected interfaces)"
+msgstr "模式：排除（代理除所选接口以外的全部）"
+
+msgid "Mode: Explicit (proxy only selected interfaces)"
+msgstr "模式：指定（仅代理所选接口）"
+
+msgid "new-list-name"
+msgstr "新列表名称"
+
+msgid "No file selected"
+msgstr "未选择文件"
+
+msgid "No interfaces detected."
+msgstr "未检测到接口。"
+
+msgid "No kernel is installed yet. You must choose a core to continue."
+msgstr "尚未安装内核，请选择一个内核以继续。"
+
+msgid "No ruleset selected. Create one to begin."
+msgstr "未选择规则集，请先创建一个。"
+
+msgid "No rulesets yet."
+msgstr "暂无规则集。"
+
+msgid "No supported package manager found (apk/opkg)."
+msgstr "未找到支持的包管理器（apk/opkg）。"
+
+msgid "Not installed"
+msgstr "未安装"
+
+msgid "One IPv4/CIDR per line. Save applies firewall update without restarting Mihomo."
+msgstr "每行一个 IPv4/CIDR。保存后将更新防火墙规则，无需重启 Mihomo。"
+
+msgid "Original URL returned links/base64 and /mihomo fallback failed: %s"
+msgstr "原始 URL 返回了链接/base64，/mihomo 回退也失败：%s"
+
+msgid "Other"
+msgstr "其他"
+
+msgid "Popup was blocked. Please allow popups for this site."
+msgstr "弹出窗口被拦截，请允许此网站弹出窗口。"
+
+msgid "Proxy mode: %s"
+msgstr "代理模式：%s"
+
+msgid "Proxy mode switched to %s. Service restarted."
+msgstr "代理模式已切换到 %s，服务已重启。"
+
+msgid "Refresh"
+msgstr "刷新"
+
+msgid "Reinstall Kernel"
+msgstr "重新安装内核"
+
+msgid "Reinstall Simo"
+msgstr "重新安装 Simo"
+
+msgid "Reinstall %s kernel"
+msgstr "重新安装 %s 内核"
+
+msgid "Remnawave blocked /mihomo path (HTTP 403). Disable \"Disable Subscription Access by Path\" in Remnawave response-rules settings."
+msgstr "Remnawave 屏蔽了 /mihomo 路径（HTTP 403），请在 Remnawave 响应规则设置中关闭"按路径禁用订阅访问"。"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "Rulesets"
+msgstr "规则集"
+
+msgid "Ruleset \"%s\" created."
+msgstr "规则集 \"%s\" 已创建。"
+
+msgid "Ruleset \"%s\" deleted."
+msgstr "规则集 \"%s\" 已删除。"
+
+msgid "Ruleset \"%s\" saved."
+msgstr "规则集 \"%s\" 已保存。"
+
+msgid "Runtime command failed"
+msgstr "运行时命令失败"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Save IP-CIDR List"
+msgstr "保存 IP-CIDR 列表"
+
+msgid "Save Settings"
+msgstr "保存设置"
+
+msgid "Save URL / Update Config"
+msgstr "保存 URL / 更新配置"
+
+msgid "%s downloaded and saved."
+msgstr "%s 已下载并保存。"
+
+msgid "Selected config will be swapped with Main config, saved, and service will restart. Continue?"
+msgstr "所选配置将与主配置交换并保存，服务将重启。是否继续？"
+
+msgid "Service command failed"
+msgstr "服务命令失败"
+
+msgid "Service did not become healthy after restart."
+msgstr "服务重启后未能恢复正常。"
+
+msgid "Service is not running."
+msgstr "服务未运行。"
+
+msgid "Service running"
+msgstr "服务运行中"
+
+msgid "Service stopped"
+msgstr "服务已停止"
+
+msgid "Set as Main"
+msgstr "设为主配置"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Settings saved."
+msgstr "设置已保存。"
+
+msgid "Settings saved and Simo service restarted."
+msgstr "设置已保存，Simo 服务已重启。"
+
+msgid "Settings saved, but failed to restart Simo service: %s"
+msgstr "设置已保存，但重启 Simo 服务失败：%s"
+
+msgid "Simo package downloaded and installed."
+msgstr "Simo 安装包已下载并安装。"
+
+msgid "Simo package installed. Reloading interface..."
+msgstr "Simo 安装包已安装，正在重新加载界面..."
+
+msgid "Simo service restarted successfully."
+msgstr "Simo 服务已成功重启。"
+
+msgid "`sing-box`: integrated runtime, but some third-party subscription outputs may still require `/mihomo` YAML export."
+msgstr "`sing-box`：集成运行时，但部分第三方订阅输出可能仍需 `/mihomo` YAML 导出。"
+
+msgid "sing-box kernel downloaded and installed."
+msgstr "sing-box 内核已下载并安装。"
+
+msgid "%s is now main config."
+msgstr "%s 现在是主配置。"
+
+msgid "%s saved."
+msgstr "%s 已保存。"
+
+msgid "Start"
+msgstr "启动"
+
+msgid "Status: %s"
+msgstr "状态：%s"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid "Store rules/providers on tmpfs"
+msgstr "将规则/提供者存储到 tmpfs"
+
+msgid "Subscription downloaded and applied."
+msgstr "订阅已下载并应用。"
+
+msgid "Subscription downloaded and applied (Remnawave /mihomo fallback)."
+msgstr "订阅已下载并应用（Remnawave /mihomo 回退）。"
+
+msgid "Subscription download failed for both original URL and /mihomo fallback: %s"
+msgstr "原始 URL 和 /mihomo 回退的订阅下载均失败：%s"
+
+msgid "Subscription URL is empty."
+msgstr "订阅 URL 为空。"
+
+msgid "Switch theme"
+msgstr "切换主题"
+
+msgid "Switch to dark theme"
+msgstr "切换到深色主题"
+
+msgid "Switch to light theme"
+msgstr "切换到浅色主题"
+
+msgid "The subscription server returned links/base64 instead of Mihomo YAML. For Remnawave use the /mihomo subscription path."
+msgstr "订阅服务器返回了链接/base64 而非 Mihomo YAML，Remnawave 请使用 /mihomo 订阅路径。"
+
+msgid "This name is reserved."
+msgstr "该名称为保留名称。"
+
+msgid "This will clear only editor content. File is not modified until you click Save."
+msgstr "这只会清空编辑器内容，点击保存前文件不会被修改。"
+
+msgid "Traffic Scope"
+msgstr "流量范围"
+
+msgid "Tun stack"
+msgstr "Tun 栈"
+
+msgid "Tun stack: %s"
+msgstr "Tun 栈：%s"
+
+msgid "Unable to read downloaded file"
+msgstr "无法读取下载的文件"
+
+msgid "Unable to toggle service: %s"
+msgstr "无法切换服务状态：%s"
+
+msgid "Unavailable"
+msgstr "不可用"
+
+msgid "unknown"
+msgstr "未知"
+
+msgid "unknown error"
+msgstr "未知错误"
+
+msgid "Updated: %s"
+msgstr "已更新：%s"
+
+msgid "Update Simo"
+msgstr "更新 Simo"
+
+msgid "Update %s kernel"
+msgstr "更新 %s 内核"
+
+msgid "User-Agent"
+msgstr "User-Agent"
+
+msgid "Validate YAML"
+msgstr "验证 YAML"
+
+msgid "Virtual"
+msgstr "虚拟"
+
+msgid "VPN / Tunnel"
+msgstr "VPN / 隧道"
+
+msgid "WAN"
+msgstr "WAN"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "YAML validation failed."
+msgstr "YAML 验证失败。"
+
+msgid "YAML validation failed: %s"
+msgstr "YAML 验证失败：%s"
+
+msgid "YAML validation passed."
+msgstr "YAML 验证通过。"
