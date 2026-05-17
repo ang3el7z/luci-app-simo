@@ -1,0 +1,588 @@
+# English translation for Simo
+# Copyright (C) 2024-2026 Simo contributors
+# This file is distributed under the same license as the package.
+#
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Additional"
+msgstr "Additional"
+
+msgid "Architecture: %s"
+msgstr "Architecture: %s"
+
+msgid "Are you sure you want to delete \"%s\"?"
+msgstr "Are you sure you want to delete \"%s\"?"
+
+msgid "A ruleset with this name already exists."
+msgstr "A ruleset with this name already exists."
+
+msgid "auto"
+msgstr "auto"
+
+msgid "Auto Detection"
+msgstr "Auto Detection"
+
+msgid "Auto detect LAN bridge"
+msgstr "Auto detect LAN bridge"
+
+msgid "Auto detect WAN interface"
+msgstr "Auto detect WAN interface"
+
+msgid "Auto LAN: %s"
+msgstr "Auto LAN: %s"
+
+msgid "Auto WAN: %s"
+msgstr "Auto WAN: %s"
+
+msgid "Block QUIC (UDP/443)"
+msgstr "Block QUIC (UDP/443)"
+
+msgid "Both original URL and /mihomo returned links/base64 instead of Mihomo YAML. Check provider export type."
+msgstr "Both original URL and /mihomo returned links/base64 instead of Mihomo YAML. Check provider export type."
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Cannot save proxy mode."
+msgstr "Cannot save proxy mode."
+
+msgid "Choose interfaces that should bypass proxy."
+msgstr "Choose interfaces that should bypass proxy."
+
+msgid "Choose interfaces that should go through proxy."
+msgstr "Choose interfaces that should go through proxy."
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Clear editor?"
+msgstr "Clear editor?"
+
+msgid "Clear Editor"
+msgstr "Clear Editor"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Command failed"
+msgstr "Command failed"
+
+msgid "Config"
+msgstr "Config"
+
+msgid "Configuration applied and service reloaded."
+msgstr "Configuration applied and service reloaded."
+
+msgid "Connection interrupted while finalizing Simo update. Reloading interface..."
+msgstr "Connection interrupted while finalizing Simo update. Reloading interface..."
+
+msgid "Control"
+msgstr "Control"
+
+msgid "Core"
+msgstr "Core"
+
+msgid "Core compatibility notes:"
+msgstr "Core compatibility notes:"
+
+msgid "Core switched to %s. Install its kernel binary to use it."
+msgstr "Core switched to %s. Install its kernel binary to use it."
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Delete Ruleset"
+msgstr "Delete Ruleset"
+
+msgid "Detected LAN: %s"
+msgstr "Detected LAN: %s"
+
+msgid "Detected WAN: %s"
+msgstr "Detected WAN: %s"
+
+msgid "Device OS"
+msgstr "Device OS"
+
+msgid "Downloaded file is empty."
+msgstr "Downloaded file is empty."
+
+msgid "Download failed"
+msgstr "Download failed"
+
+msgid "Downloading..."
+msgstr "Downloading..."
+
+msgid "Downloading mihomo kernel..."
+msgstr "Downloading mihomo kernel..."
+
+msgid "Downloading Simo package..."
+msgstr "Downloading Simo package..."
+
+msgid "Downloading sing-box kernel..."
+msgstr "Downloading sing-box kernel..."
+
+msgid "Download Kernel"
+msgstr "Download Kernel"
+
+msgid "Download Update"
+msgstr "Download Update"
+
+msgid "Ethernet"
+msgstr "Ethernet"
+
+msgid "Example usage in config.yaml"
+msgstr "Example usage in config.yaml"
+
+msgid "Exclude mode: proxy all interfaces except selected ones"
+msgstr "Exclude mode: proxy all interfaces except selected ones"
+
+msgid "Explicit mode: proxy only selected interfaces"
+msgstr "Explicit mode: proxy only selected interfaces"
+
+msgid "Extraction failed"
+msgstr "Extraction failed"
+
+msgid "Failed to apply configuration: %s"
+msgstr "Failed to apply configuration: %s"
+
+msgid "Failed to apply subscription: %s"
+msgstr "Failed to apply subscription: %s"
+
+msgid "Failed to create ruleset."
+msgstr "Failed to create ruleset."
+
+msgid "Failed to initialize editor: %s"
+msgstr "Failed to initialize editor: %s"
+
+msgid "Failed to install Simo dependencies."
+msgstr "Failed to install Simo dependencies."
+
+msgid "Failed to install Simo package."
+msgstr "Failed to install Simo package."
+
+msgid "Failed to install sing-box binary"
+msgstr "Failed to install sing-box binary"
+
+msgid "Failed to load config profile: %s"
+msgstr "Failed to load config profile: %s"
+
+msgid "Failed to load kernel information: %s"
+msgstr "Failed to load kernel information: %s"
+
+msgid "Failed to load Simo release information: %s"
+msgstr "Failed to load Simo release information: %s"
+
+msgid "Failed to mark sing-box executable"
+msgstr "Failed to mark sing-box executable"
+
+msgid "Failed to open dashboard: %s"
+msgstr "Failed to open dashboard: %s"
+
+msgid "Failed to open rulesets: %s"
+msgstr "Failed to open rulesets: %s"
+
+msgid "Failed to prepare extraction directory"
+msgstr "Failed to prepare extraction directory"
+
+msgid "Failed to prepare runtime config."
+msgstr "Failed to prepare runtime config."
+
+msgid "Failed to refresh logs: %s"
+msgstr "Failed to refresh logs: %s"
+
+msgid "Failed to restart Simo service: %s"
+msgstr "Failed to restart Simo service: %s"
+
+msgid "Failed to save IP-CIDR list: %s"
+msgstr "Failed to save IP-CIDR list: %s"
+
+msgid "Failed to save ruleset: %s"
+msgstr "Failed to save ruleset: %s"
+
+msgid "Failed to save settings: %s"
+msgstr "Failed to save settings: %s"
+
+msgid "Failed to save theme preference: %s"
+msgstr "Failed to save theme preference: %s"
+
+msgid "Failed to set active kernel"
+msgstr "Failed to set active kernel"
+
+msgid "Failed to set main config: %s"
+msgstr "Failed to set main config: %s"
+
+msgid "Failed to switch kernel: %s"
+msgstr "Failed to switch kernel: %s"
+
+msgid "Failed to switch proxy mode: %s"
+msgstr "Failed to switch proxy mode: %s"
+
+msgid "Failed to update package index."
+msgstr "Failed to update package index."
+
+msgid "Failed to update Simo: %s"
+msgstr "Failed to update Simo: %s"
+
+msgid "Failed to validate runtime config."
+msgstr "Failed to validate runtime config."
+
+msgid "First Run: Install Kernel"
+msgstr "First Run: Install Kernel"
+
+msgid "Inject HWID headers into proxy-providers"
+msgstr "Inject HWID headers into proxy-providers"
+
+msgid "Installed"
+msgstr "Installed"
+
+msgid "Installed version: %s"
+msgstr "Installed version: %s"
+
+msgid "Installing..."
+msgstr "Installing..."
+
+msgid "Install Kernel"
+msgstr "Install Kernel"
+
+msgid "Install mihomo"
+msgstr "Install mihomo"
+
+msgid "Install Simo"
+msgstr "Install Simo"
+
+msgid "Install sing-box"
+msgstr "Install sing-box"
+
+msgid "Install %s kernel"
+msgstr "Install %s kernel"
+
+msgid "Interfaces"
+msgstr "Interfaces"
+
+msgid "Invalid name. Use letters, numbers, \"_\" or \"-\"."
+msgstr "Invalid name. Use letters, numbers, \"_\" or \"-\"."
+
+msgid "Invalid subscription URL."
+msgstr "Invalid subscription URL."
+
+msgid "IP-CIDR List (fake-ip whitelist mode)"
+msgstr "IP-CIDR List (fake-ip whitelist mode)"
+
+msgid "IP-CIDR list saved and firewall rules updated."
+msgstr "IP-CIDR list saved and firewall rules updated."
+
+msgid "IP-CIDR list saved, but firewall update failed: %s"
+msgstr "IP-CIDR list saved, but firewall update failed: %s"
+
+msgid "Kernel download failed: %s"
+msgstr "Kernel download failed: %s"
+
+msgid "Kernel installed and service restarted."
+msgstr "Kernel installed and service restarted."
+
+msgid "Kernel installed, but failed to restart service: %s"
+msgstr "Kernel installed, but failed to restart service: %s"
+
+msgid "Kernel installed successfully."
+msgstr "Kernel installed successfully."
+
+msgid "Kernel Settings"
+msgstr "Kernel Settings"
+
+msgid "Kernel switched to %s, config validated, and service is healthy."
+msgstr "Kernel switched to %s, config validated, and service is healthy."
+
+msgid "Kernel switched to %s. Runtime config prepared and validated."
+msgstr "Kernel switched to %s. Runtime config prepared and validated."
+
+msgid "Kernel switch to %s failed, and rollback to %s also failed: %s"
+msgstr "Kernel switch to %s failed, and rollback to %s also failed: %s"
+
+msgid "Kernel switch to %s failed: %s. Rolled back to %s."
+msgstr "Kernel switch to %s failed: %s. Rolled back to %s."
+
+msgid "Latest release: %s"
+msgstr "Latest release: %s"
+
+msgid "Local Rulesets"
+msgstr "Local Rulesets"
+
+msgid "Logs"
+msgstr "Logs"
+
+msgid "Manage local .txt lists for rule-providers."
+msgstr "Manage local .txt lists for rule-providers."
+
+msgid "Manual interfaces: %s"
+msgstr "Manual interfaces: %s"
+
+msgid "`mihomo`: best compatibility with existing YAML profile providers and rule flows."
+msgstr "`mihomo`: best compatibility with existing YAML profile providers and rule flows."
+
+msgid "Mihomo kernel downloaded and installed."
+msgstr "Mihomo kernel downloaded and installed."
+
+msgid "Mode"
+msgstr "Mode"
+
+msgid "Mode: Exclude (proxy all except selected interfaces)"
+msgstr "Mode: Exclude (proxy all except selected interfaces)"
+
+msgid "Mode: Explicit (proxy only selected interfaces)"
+msgstr "Mode: Explicit (proxy only selected interfaces)"
+
+msgid "new-list-name"
+msgstr "new-list-name"
+
+msgid "No file selected"
+msgstr "No file selected"
+
+msgid "No interfaces detected."
+msgstr "No interfaces detected."
+
+msgid "No kernel is installed yet. You must choose a core to continue."
+msgstr "No kernel is installed yet. You must choose a core to continue."
+
+msgid "No ruleset selected. Create one to begin."
+msgstr "No ruleset selected. Create one to begin."
+
+msgid "No rulesets yet."
+msgstr "No rulesets yet."
+
+msgid "No supported package manager found (apk/opkg)."
+msgstr "No supported package manager found (apk/opkg)."
+
+msgid "Not installed"
+msgstr "Not installed"
+
+msgid "One IPv4/CIDR per line. Save applies firewall update without restarting Mihomo."
+msgstr "One IPv4/CIDR per line. Save applies firewall update without restarting Mihomo."
+
+msgid "Original URL returned links/base64 and /mihomo fallback failed: %s"
+msgstr "Original URL returned links/base64 and /mihomo fallback failed: %s"
+
+msgid "Other"
+msgstr "Other"
+
+msgid "Popup was blocked. Please allow popups for this site."
+msgstr "Popup was blocked. Please allow popups for this site."
+
+msgid "Proxy mode: %s"
+msgstr "Proxy mode: %s"
+
+msgid "Proxy mode switched to %s. Service restarted."
+msgstr "Proxy mode switched to %s. Service restarted."
+
+msgid "Refresh"
+msgstr "Refresh"
+
+msgid "Reinstall Kernel"
+msgstr "Reinstall Kernel"
+
+msgid "Reinstall Simo"
+msgstr "Reinstall Simo"
+
+msgid "Reinstall %s kernel"
+msgstr "Reinstall %s kernel"
+
+msgid "Remnawave blocked /mihomo path (HTTP 403). Disable \"Disable Subscription Access by Path\" in Remnawave response-rules settings."
+msgstr "Remnawave blocked /mihomo path (HTTP 403). Disable \"Disable Subscription Access by Path\" in Remnawave response-rules settings."
+
+msgid "Restart"
+msgstr "Restart"
+
+msgid "Rulesets"
+msgstr "Rulesets"
+
+msgid "Ruleset \"%s\" created."
+msgstr "Ruleset \"%s\" created."
+
+msgid "Ruleset \"%s\" deleted."
+msgstr "Ruleset \"%s\" deleted."
+
+msgid "Ruleset \"%s\" saved."
+msgstr "Ruleset \"%s\" saved."
+
+msgid "Runtime command failed"
+msgstr "Runtime command failed"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save IP-CIDR List"
+msgstr "Save IP-CIDR List"
+
+msgid "Save Settings"
+msgstr "Save Settings"
+
+msgid "Save URL / Update Config"
+msgstr "Save URL / Update Config"
+
+msgid "%s downloaded and saved."
+msgstr "%s downloaded and saved."
+
+msgid "Selected config will be swapped with Main config, saved, and service will restart. Continue?"
+msgstr "Selected config will be swapped with Main config, saved, and service will restart. Continue?"
+
+msgid "Service command failed"
+msgstr "Service command failed"
+
+msgid "Service did not become healthy after restart."
+msgstr "Service did not become healthy after restart."
+
+msgid "Service is not running."
+msgstr "Service is not running."
+
+msgid "Service running"
+msgstr "Service running"
+
+msgid "Service stopped"
+msgstr "Service stopped"
+
+msgid "Set as Main"
+msgstr "Set as Main"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Settings saved."
+msgstr "Settings saved."
+
+msgid "Settings saved and Simo service restarted."
+msgstr "Settings saved and Simo service restarted."
+
+msgid "Settings saved, but failed to restart Simo service: %s"
+msgstr "Settings saved, but failed to restart Simo service: %s"
+
+msgid "Simo package downloaded and installed."
+msgstr "Simo package downloaded and installed."
+
+msgid "Simo package installed. Reloading interface..."
+msgstr "Simo package installed. Reloading interface..."
+
+msgid "Simo service restarted successfully."
+msgstr "Simo service restarted successfully."
+
+msgid "`sing-box`: integrated runtime, but some third-party subscription outputs may still require `/mihomo` YAML export."
+msgstr "`sing-box`: integrated runtime, but some third-party subscription outputs may still require `/mihomo` YAML export."
+
+msgid "sing-box kernel downloaded and installed."
+msgstr "sing-box kernel downloaded and installed."
+
+msgid "%s is now main config."
+msgstr "%s is now main config."
+
+msgid "%s saved."
+msgstr "%s saved."
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Status: %s"
+msgstr "Status: %s"
+
+msgid "Stop"
+msgstr "Stop"
+
+msgid "Store rules/providers on tmpfs"
+msgstr "Store rules/providers on tmpfs"
+
+msgid "Subscription downloaded and applied."
+msgstr "Subscription downloaded and applied."
+
+msgid "Subscription downloaded and applied (Remnawave /mihomo fallback)."
+msgstr "Subscription downloaded and applied (Remnawave /mihomo fallback)."
+
+msgid "Subscription download failed for both original URL and /mihomo fallback: %s"
+msgstr "Subscription download failed for both original URL and /mihomo fallback: %s"
+
+msgid "Subscription URL is empty."
+msgstr "Subscription URL is empty."
+
+msgid "Switch theme"
+msgstr "Switch theme"
+
+msgid "Switch to dark theme"
+msgstr "Switch to dark theme"
+
+msgid "Switch to light theme"
+msgstr "Switch to light theme"
+
+msgid "The subscription server returned links/base64 instead of Mihomo YAML. For Remnawave use the /mihomo subscription path."
+msgstr "The subscription server returned links/base64 instead of Mihomo YAML. For Remnawave use the /mihomo subscription path."
+
+msgid "This name is reserved."
+msgstr "This name is reserved."
+
+msgid "This will clear only editor content. File is not modified until you click Save."
+msgstr "This will clear only editor content. File is not modified until you click Save."
+
+msgid "Traffic Scope"
+msgstr "Traffic Scope"
+
+msgid "Tun stack"
+msgstr "Tun stack"
+
+msgid "Tun stack: %s"
+msgstr "Tun stack: %s"
+
+msgid "Unable to read downloaded file"
+msgstr "Unable to read downloaded file"
+
+msgid "Unable to toggle service: %s"
+msgstr "Unable to toggle service: %s"
+
+msgid "Unavailable"
+msgstr "Unavailable"
+
+msgid "unknown"
+msgstr "unknown"
+
+msgid "unknown error"
+msgstr "unknown error"
+
+msgid "Updated: %s"
+msgstr "Updated: %s"
+
+msgid "Update Simo"
+msgstr "Update Simo"
+
+msgid "Update %s kernel"
+msgstr "Update %s kernel"
+
+msgid "User-Agent"
+msgstr "User-Agent"
+
+msgid "Validate YAML"
+msgstr "Validate YAML"
+
+msgid "Virtual"
+msgstr "Virtual"
+
+msgid "VPN / Tunnel"
+msgstr "VPN / Tunnel"
+
+msgid "WAN"
+msgstr "WAN"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "YAML validation failed."
+msgstr "YAML validation failed."
+
+msgid "YAML validation failed: %s"
+msgstr "YAML validation failed: %s"
+
+msgid "YAML validation passed."
+msgstr "YAML validation passed."

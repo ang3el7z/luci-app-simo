@@ -16,18 +16,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
 
-PKG_BUILD_DEPENDS:=luci-base/host
-
-include $(INCLUDE_DIR)/package.mk
-
-define Package/$(PKG_NAME)
-	SECTION:=luci
-	CATEGORY:=LuCI
-	SUBMENU:=3. Applications
-	TITLE:=$(LUCI_TITLE)
-	DEPENDS:=$(LUCI_DEPENDS)
-	PKGARCH:=$(LUCI_PKGARCH)
-endef
+include $(TOPDIR)/feeds/luci/luci.mk
 
 define Package/$(PKG_NAME)/config
 choice
@@ -46,71 +35,9 @@ config PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
 endchoice
 endef
 
-define Package/$(PKG_NAME)/description
-	LuCI interface for Simo, a neutral shell for managing multiple proxy cores.
-endef
-
-define Build/Prepare
-	# No preparation steps required
-endef
-
-define Build/Compile
-	@mkdir -p $(PKG_BUILD_DIR)/po/ru
-	@if [ -f "./rootfs/po/ru/simo.po" ]; then \
-		$(STAGING_DIR_HOSTPKG)/bin/po2lmo \
-			"./rootfs/po/ru/simo.po" \
-			"$(PKG_BUILD_DIR)/po/ru/simo.lmo"; \
-	fi
-endef
-
 define Package/$(PKG_NAME)/conffiles
 /opt/simo/config.yaml
 /opt/simo/config-singbox.json
-endef
-
-define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./rootfs/etc/init.d/simo $(1)/etc/init.d/
-
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
-	$(INSTALL_BIN) ./rootfs/etc/hotplug.d/iface/40-simo $(1)/etc/hotplug.d/iface/
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/net
-	$(INSTALL_BIN) ./rootfs/etc/hotplug.d/net/99-simo-tun $(1)/etc/hotplug.d/net/
-
-	$(INSTALL_DIR) $(1)/opt/simo/bin
-	$(INSTALL_BIN) ./rootfs/opt/simo/bin/simo-rules $(1)/opt/simo/bin/
-	$(INSTALL_BIN) ./rootfs/opt/simo/bin/simo-kernel-manager $(1)/opt/simo/bin/
-	$(INSTALL_BIN) ./rootfs/opt/simo/bin/simo-runtime $(1)/opt/simo/bin/
-	$(INSTALL_BIN) ./rootfs/opt/simo/bin/simo-singbox-adapter $(1)/opt/simo/bin/
-
-	$(INSTALL_DIR) $(1)/opt/simo
-	$(INSTALL_DATA) ./rootfs/opt/simo/config.yaml $(1)/opt/simo/
-	$(INSTALL_DATA) ./rootfs/opt/simo/config-singbox.json $(1)/opt/simo/
-
-	$(INSTALL_DIR) $(1)/opt/simo/ui
-	$(CP) ./rootfs/opt/simo/ui/* $(1)/opt/simo/ui/
-
-	$(INSTALL_DIR) $(1)/usr/share/luci/menu.d
-	$(INSTALL_DATA) ./rootfs/usr/share/luci/menu.d/luci-app-simo.json $(1)/usr/share/luci/menu.d/
-
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./rootfs/usr/share/rpcd/acl.d/luci-app-simo.json $(1)/usr/share/rpcd/acl.d/
-
-	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/simo
-	$(CP) ./rootfs/www/luci-static/resources/view/simo/* $(1)/www/luci-static/resources/view/simo/
-
-	$(INSTALL_DIR) $(1)/opt/simo/lst
-
-ifdef CONFIG_USE_APK
-	$(INSTALL_DIR) $(1)/etc/apk/protected_paths.d
-	$(INSTALL_DATA) ./rootfs/etc/apk/protected_paths.d/simo.list $(1)/etc/apk/protected_paths.d/
-endif
-
-	@if [ -f "$(PKG_BUILD_DIR)/po/ru/simo.lmo" ]; then \
-		$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n; \
-		$(INSTALL_DATA) "$(PKG_BUILD_DIR)/po/ru/simo.lmo" \
-			"$(1)/usr/lib/lua/luci/i18n/simo.ru.lmo"; \
-	fi
 endef
 
 define Package/$(PKG_NAME)/preinst
@@ -129,8 +56,10 @@ if [ -f /tmp/simo_config-singbox.json.bak ]; then
 	mv /tmp/simo_config-singbox.json.bak /opt/simo/config-singbox.json
 fi
 	[ -n "$$IPKG_INSTROOT" ] || {
-		/etc/init.d/rpcd reload
-		rm -f /tmp/luci-*
+		mkdir -p /opt/simo/lst
+		rm -f /tmp/luci-indexcache.*
+		rm -rf /tmp/luci-modulecache/
+		/etc/init.d/rpcd reload 2>/dev/null
 
 		# Re-sync active core link after install/upgrade. This keeps /opt/simo/bin/core
 		# aligned with CORE_TYPE in /opt/simo/settings when binaries already exist.
